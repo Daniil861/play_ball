@@ -62,6 +62,12 @@
         if (document.querySelector(".preloader")) document.querySelector(".preloader").classList.add("_hide");
         document.querySelector(".wrapper").classList.add("_visible");
     }
+    const appHeight = () => {
+        const doc = document.documentElement;
+        doc.style.setProperty("--app-height", `${window.innerHeight}px`);
+    };
+    window.addEventListener("resize", appHeight);
+    appHeight();
     const dots = document.querySelector(".preloader__dots");
     const preloader = document.querySelector(".preloader");
     const preloader_txt_hide = document.querySelectorAll(".acces-preloader__text-hide");
@@ -491,22 +497,23 @@
             clearInterval(timerId);
             game_ball.classList.add("_hide");
             let lifes = +document.querySelector(".header-wrapper_lifes").innerHTML;
-            if (lifes <= 0) document.querySelector(".loose").classList.add("_active");
-            lifes--;
-            setTimeout((() => {
-                document.querySelector(".header-wrapper_lifes").textContent = lifes;
-                game_ball.style.left = "42%";
-                game_ball.style.bottom = "10%";
-                ballCurrentPosition = [ 42, 10 ];
+            if (lifes <= 0) document.querySelector(".loose").classList.add("_active"); else {
+                lifes--;
                 setTimeout((() => {
-                    game_ball.classList.remove("_hide");
+                    document.querySelector(".header-wrapper_lifes").textContent = lifes;
+                    game_ball.style.left = "42%";
+                    game_ball.style.bottom = "10%";
+                    ballCurrentPosition = [ 42, 10 ];
+                    setTimeout((() => {
+                        game_ball.classList.remove("_hide");
+                    }), 500);
+                    setTimeout((() => {
+                        timerId = setInterval((() => {
+                            moveBall();
+                        }), 30);
+                    }), 1e3);
                 }), 500);
-                setTimeout((() => {
-                    timerId = setInterval((() => {
-                        moveBall();
-                    }), 30);
-                }), 1e3);
-            }), 500);
+            }
         }
         if (ball_left + ball_diametr >= platform_left + 50 && ball_left + ball_diametr <= platform_left + platform_width && ballCurrentPosition[1] <= 10) yDirection = 1;
     }

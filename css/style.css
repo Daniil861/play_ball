@@ -137,6 +137,7 @@ body._loaded {
 }
 
 .wrapper {
+  min-height: 100%;
   display: none;
   flex-direction: column;
   overflow: hidden;
@@ -196,13 +197,12 @@ body._loaded {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #dcdcdc;
   box-shadow: inset 0px 2px 2px rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.1);
   /* Если браузер поддерживает backdrop-filter */
+  border: 1px solid #dcdcdc;
   border-radius: 20px;
   position: relative;
-  border: 1px solid #dcdcdc;
   z-index: 1;
 }
 @supports (-webkit-backdrop-filter: blur(40px)) or (backdrop-filter: blur(40px)) {
@@ -210,6 +210,9 @@ body._loaded {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(40px);
   }
+}
+.button__body_main {
+  border: none;
 }
 .button__body_game {
   width: 13.75rem;
@@ -362,6 +365,20 @@ body._loaded {
 	}
 }
 */
+:root {
+  --app-height: 100%;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  height: var(--app-height);
+}
+
 .preloader {
   background: url("../img/main/bg.jpg") center/cover no-repeat;
   width: 100%;
@@ -602,6 +619,7 @@ body._loaded {
   font-size: 0.75rem;
   line-height: 0.875rem;
   color: #ffffff;
+  position: relative;
 }
 .header-wrapper__count._anim {
   animation: text-easeOutElastic 0.8s ease;
@@ -611,6 +629,7 @@ body._loaded {
 }
 .header-wrapper__count._no-money {
   animation: no-money 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2;
+  -webkit-animation: no-money 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2;
 }
 .header-wrapper__pause {
   position: absolute;
@@ -623,7 +642,7 @@ body._loaded {
 }
 
 .main {
-  height: calc(100vh - 55px);
+  min-height: calc(100vh - 140px);
   display: flex;
   align-items: center;
 }
@@ -637,13 +656,15 @@ body._loaded {
 .main__button {
   position: relative;
   display: block;
+  border: 1px solid #dcdcdc;
+  border-radius: 20px;
 }
 
 .bonus__body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 3.125rem);
+  min-height: calc(100vh - 140px);
 }
 .bonus__image {
   margin-top: -50%;
@@ -651,6 +672,7 @@ body._loaded {
 }
 .bonus__image._anim {
   animation: rotate_cub 1s ease;
+  -webkit-animation: rotate_cub 1s ease;
 }
 .bonus__prize {
   position: absolute;
@@ -732,7 +754,7 @@ body._loaded {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 55px);
+  min-height: calc(100vh - 140px);
 }
 .shop__items {
   width: 19.375rem;
@@ -804,7 +826,7 @@ body._loaded {
 }
 .game__body {
   position: relative;
-  min-height: calc(100vh - 55px);
+  min-height: calc(100vh - 140px);
   width: 100%;
 }
 .game__field {
@@ -831,7 +853,7 @@ body._loaded {
   }
 }
 .game__block_fruit {
-  bottom: 80%;
+  bottom: 86%;
   left: 60%;
 }
 .game__block_fruit-one {
@@ -867,19 +889,19 @@ body._loaded {
   left: 35%;
 }
 .game__block_lemon-two {
-  bottom: 55%;
+  bottom: 53%;
   left: 5%;
 }
 .game__block_lemon-three {
-  bottom: 55%;
+  bottom: 53%;
   left: 35%;
 }
 .game__block_lemon-four {
-  bottom: 60%;
+  bottom: 57%;
   left: 30%;
 }
 .game__block_lemon-five {
-  bottom: 60%;
+  bottom: 57%;
   left: 55%;
 }
 .game__block_orange-one {
@@ -895,11 +917,11 @@ body._loaded {
   left: 5%;
 }
 .game__block_bag-one {
-  bottom: 50%;
+  bottom: 47%;
   left: 5%;
 }
 .game__block_bag-two {
-  bottom: 50%;
+  bottom: 47%;
   left: 30%;
 }
 .game__element {
@@ -990,7 +1012,7 @@ body._loaded {
 }
 .game__ball {
   position: absolute;
-  bottom: 9%;
+  bottom: 11%;
   left: 42%;
   border-radius: 50%;
 }
@@ -1082,7 +1104,7 @@ body._loaded {
 }
 
 .pause {
-  min-height: calc(100vh - 55px);
+  min-height: calc(100vh - 140px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1200,14 +1222,11 @@ body._loaded {
   display: block;
 }
 
-.levels {
-  min-height: calc(100vh - 55px);
-}
 .levels__body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 55px);
+  min-height: calc(100vh - 140px);
 }
 .levels__item {
   position: relative;
@@ -1240,30 +1259,90 @@ body._loaded {
 @keyframes rotate_cub {
   0% {
     transform: translate(0, 0);
+    -webkit-transform: translate(0, 0);
+    left: 0;
+    top: 0;
+    opacity: 1;
   }
   5% {
     transform: translate(-10%, 5%);
+    -webkit-transform: translate(-10%, 5%);
+    left: -10%;
+    top: 5%;
+    opacity: 1;
   }
   10% {
     transform: translate(-15%, 15%);
+    -webkit-transform: translate(-15%, 15%);
+    opacity: 1;
   }
   15% {
     transform: translate(-10%, 20%);
+    -webkit-transform: translate(-10%, 20%);
+    opacity: 1;
   }
   20% {
     transform: translate(-5%, 20%);
+    -webkit-transform: translate(-5%, 20%);
+    opacity: 1;
   }
   25% {
     transform: translate(5%, 10%);
+    -webkit-transform: translate(5%, 10%);
+    opacity: 1;
   }
   30% {
     transform: translate(10%, -5%);
+    -webkit-transform: translate(10%, -5%);
+    opacity: 1;
   }
   95% {
     transform: translate(5%, -20%);
+    -webkit-transform: translate(5%, -20%);
+    opacity: 1;
   }
   100% {
     transform: translate(0, 0);
+    -webkit-transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+@-webkit-keyframes rotate_cub {
+  0% {
+    left: 0;
+    top: 0;
+  }
+  5% {
+    left: -10%;
+    top: 10px;
+  }
+  10% {
+    left: -15%;
+    top: 30px;
+  }
+  15% {
+    left: -10%;
+    top: 40px;
+  }
+  20% {
+    left: -5%;
+    top: 40px;
+  }
+  25% {
+    left: 5%;
+    top: 20px;
+  }
+  30% {
+    left: 10%;
+    top: -10px;
+  }
+  95% {
+    left: 5%;
+    top: -40px;
+  }
+  100% {
+    left: 0%;
+    top: 0%;
   }
 }
 @keyframes text-easeOutElastic {
@@ -1314,6 +1393,12 @@ body._loaded {
   }
   100% {
     transform: scale(1.1) translateY(-2px);
+    color: #f53232;
+  }
+}
+@-webkit-keyframes no-money {
+  100% {
+    top: -2px;
     color: #f53232;
   }
 }

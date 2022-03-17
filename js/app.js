@@ -13,6 +13,37 @@
             document.documentElement.classList.add(className);
         }));
     }
+    let isMobile = {
+        Android: function() {
+            return navigator.userAgent.match(/Android/i);
+        },
+        BlackBerry: function() {
+            return navigator.userAgent.match(/BlackBerry/i);
+        },
+        iOS: function() {
+            return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+        },
+        Opera: function() {
+            return navigator.userAgent.match(/Opera Mini/i);
+        },
+        Windows: function() {
+            return navigator.userAgent.match(/IEMobile/i);
+        },
+        any: function() {
+            return isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows();
+        }
+    };
+    function fullVHfix() {
+        const fullScreens = document.querySelectorAll("[data-fullscreen]");
+        if (fullScreens.length && isMobile.any()) {
+            window.addEventListener("resize", fixHeight);
+            function fixHeight() {
+                let vh = .01 * window.innerHeight;
+                document.documentElement.style.setProperty("--vh", `${vh}px`);
+            }
+            fixHeight();
+        }
+    }
     let addWindowScrollEvent = false;
     setTimeout((() => {
         if (addWindowScrollEvent) {
@@ -38,7 +69,7 @@
     const button_preloader_back = document.querySelector(".acces-preloader__button_back");
     const wrapper = document.querySelector(".wrapper");
     const pause_button = document.querySelector(".header-wrapper__pause");
-    const game_livel_1 = document.querySelector(".game");
+    const game = document.querySelector(".game");
     const pause_item = document.querySelector(".pause");
     let monets = document.querySelector(".header-wrapper__count_points");
     let diamonds = document.querySelector(".header-wrapper__count_time");
@@ -135,27 +166,27 @@
         }
         if (targetElement.closest(".header-wrapper__pause")) if (pause_button.classList.contains("_active")) {
             pause_button.classList.remove("_active");
-            game_livel_1.classList.remove("_hide");
+            game.classList.remove("_hide");
             pause_item.classList.remove("_active");
             timerId = setInterval((() => {
                 moveBall();
             }), 30);
         } else {
             pause_button.classList.add("_active");
-            game_livel_1.classList.add("_hide");
+            game.classList.add("_hide");
             pause_item.classList.add("_active");
             clearInterval(timerId);
         }
         if (targetElement.closest(".pause__item_continue")) {
             pause_button.classList.remove("_active");
-            game_livel_1.classList.remove("_hide");
+            game.classList.remove("_hide");
             pause_item.classList.remove("_active");
             timerId = setInterval((() => {
                 moveBall();
             }), 30);
         }
         if (targetElement.closest(".button_start")) if (sessionStorage.getItem("game-one") || sessionStorage.getItem("game-two") || sessionStorage.getItem("game-three")) location.href = "levels.html"; else location.href = "game.html";
-        if (targetElement.closest(".game__ball") && !sessionStorage.getItem("play-ball")) {
+        if (targetElement.closest(".game__ball")) {
             timerId = setInterval((() => {
                 moveBall();
             }), 30);
@@ -191,15 +222,14 @@
     let platform_cord_y = null;
     const blockWidth = 47;
     const blockHeight = 52;
-    document.querySelector(".game__field");
     const game_body = document.querySelector(".game__body");
     const game_ball = document.querySelector(".game__ball");
     const game_platform = document.querySelector(".game__platform");
     let platformStart = [ 16, 5 ];
     let currentPosition = platformStart;
-    const platform_speed = 40;
+    const platform_speed = 25;
     const platform_width = 270;
-    let ballStart = [ 49, 13 ];
+    let ballStart = [ 49, 10 ];
     let ballCurrentPosition = ballStart;
     const ball_diametr = 70;
     let xDirection = 1;
@@ -211,8 +241,27 @@
             let firstTouch = e.touches[0];
             platform_cord_x = firstTouch.clientX;
             platform_cord_y = firstTouch.clientY;
-            console.log(`Start coord: ${platform_cord_x} `);
         }
+    }
+    function handleTouchMove(e) {
+        if (!platform_cord_x || !platform_cord_y) return false;
+        let platform_cord_x2 = e.touches[0].clientX;
+        let xDiff = platform_cord_x2 - platform_cord_x;
+        const element = document.querySelector(".game__platform");
+        const style = window.getComputedStyle(element);
+        let coord_left = parseInt(style.left, 10);
+        if (xDiff > 0) {
+            if (currentPosition[0] < window_width - platform_width) {
+                currentPosition[0] += platform_speed;
+                move_platform();
+            }
+        } else if (coord_left > 0) {
+            currentPosition[0] -= platform_speed;
+            move_platform();
+        }
+    }
+    function move_platform() {
+        document.querySelector(".game__platform").style.left = `${currentPosition[0]}px`;
     }
     function translate_ball_width() {
         return 100 * ball_diametr / window_width;
@@ -342,27 +391,6 @@
             if (sessionStorage.getItem("ball") > 0) document.querySelector(".weapons__ball").classList.remove("_no-active");
         }), 1e3);
     }
-    function handleTouchMove(e) {
-        if (!platform_cord_x || !platform_cord_y) return false;
-        let platform_cord_x2 = e.touches[0].clientX;
-        let xDiff = platform_cord_x2 - platform_cord_x;
-        const element = document.querySelector(".game__platform");
-        const style = window.getComputedStyle(element);
-        let coord_left = parseInt(style.left, 10);
-        console.log(coord_left);
-        if (xDiff > 0) {
-            if (currentPosition[0] < window_width - platform_width) {
-                currentPosition[0] += platform_speed;
-                move_platform();
-            }
-        } else if (coord_left > 0) {
-            currentPosition[0] -= platform_speed;
-            move_platform();
-        }
-    }
-    function move_platform() {
-        document.querySelector(".game__platform").style.left = `${currentPosition[0]}px`;
-    }
     function draw_ball() {
         game_ball.style.left = ballCurrentPosition[0] + "%";
         game_ball.style.bottom = ballCurrentPosition[1] + "%";
@@ -382,7 +410,6 @@
         all_blocks.forEach((el => {
             if (0 == el.dataset.destroy) active_blocks++;
         }));
-        console.log(active_blocks);
         if (active_blocks <= 0) {
             clearInterval(timerId);
             document.querySelector(".play").classList.add("_active");
@@ -469,8 +496,8 @@
             setTimeout((() => {
                 document.querySelector(".header-wrapper_lifes").textContent = lifes;
                 game_ball.style.left = "42%";
-                game_ball.style.bottom = "13%";
-                ballCurrentPosition = [ 42, 13 ];
+                game_ball.style.bottom = "10%";
+                ballCurrentPosition = [ 42, 10 ];
                 setTimeout((() => {
                     game_ball.classList.remove("_hide");
                 }), 500);
@@ -481,7 +508,7 @@
                 }), 1e3);
             }), 500);
         }
-        if (ball_left + ball_diametr >= platform_left + 50 && ball_left + ball_diametr <= platform_left + platform_width && ballCurrentPosition[1] <= 6) yDirection = 1;
+        if (ball_left + ball_diametr >= platform_left + 50 && ball_left + ball_diametr <= platform_left + platform_width && ballCurrentPosition[1] <= 10) yDirection = 1;
     }
     function moveBall() {
         ballCurrentPosition[0] += xDirection;
@@ -709,4 +736,5 @@
     }
     window["FLS"] = true;
     isWebp();
+    fullVHfix();
 })();

@@ -670,8 +670,13 @@ body._game {
   min-height: calc(100vh - 55px);
 }
 .bonus__image {
-  margin-top: -50%;
+  margin-top: -10%;
   position: relative;
+}
+@media (min-height: 30em) {
+  .bonus__image {
+    margin-top: -50%;
+  }
 }
 .bonus__image._anim {
   animation: rotate_cub 1s ease;
@@ -737,7 +742,12 @@ body._game {
 }
 .bonus__button {
   position: absolute;
-  bottom: 20%;
+  bottom: 2%;
+}
+@media (min-height: 30em) {
+  .bonus__button {
+    bottom: 20%;
+  }
 }
 .bonus__button._hide {
   pointer-events: none;
@@ -795,17 +805,28 @@ body._game {
   border: 3px solid #ffc01d;
   border-radius: 17px;
 }
+.shop__item._hide {
+  pointer-events: none;
+}
 .shop__item:active {
   transform: translateY(3px);
 }
+.shop__icon {
+  position: relative;
+}
+.shop__icon._anim {
+  animation: scale-icon-shop 1s ease forwards;
+  -webkit-animation: scale-icon-shop 1s ease forwards;
+}
 .shop__icon_ball {
-  transform: translate(-15px, 8px);
+  top: 8px;
+  left: -15px;
 }
 .shop__icon_bomb {
-  transform: translate(-15px, 0);
+  left: -15px;
 }
 .shop__icon_rocket {
-  transform: translate(-10px, 0);
+  left: -10px;
 }
 .shop__text {
   flex: 0 1 70%;
@@ -1104,6 +1125,20 @@ body._game {
 .weapons__rocket._no-active {
   pointer-events: none;
   opacity: 0.4;
+}
+.weapons__count {
+  position: absolute;
+  right: 10px;
+  color: #fff;
+}
+.weapons__count_bomb {
+  top: 50px;
+}
+.weapons__count_ball {
+  top: 110px;
+}
+.weapons__count_rocket {
+  top: 165px;
 }
 
 .pause {
@@ -1422,5 +1457,39 @@ body._game {
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+@keyframes scale-icon-shop {
+  0% {
+    transform: scale(1);
+    top: 0;
+    opacity: 1;
+  }
+  80% {
+    transform: scale(1.5);
+    top: 0;
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    top: -100px;
+    opacity: 0;
+  }
+}
+@-webkit-keyframes scale-icon-shop {
+  0% {
+    -webkit-transform: scale(1);
+    top: 0;
+    opacity: 1;
+  }
+  80% {
+    -webkit-transform: scale(1.5);
+    top: 0;
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(1.5);
+    top: -100px;
+    opacity: 0;
   }
 }

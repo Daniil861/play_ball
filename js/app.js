@@ -13,37 +13,6 @@
             document.documentElement.classList.add(className);
         }));
     }
-    let isMobile = {
-        Android: function() {
-            return navigator.userAgent.match(/Android/i);
-        },
-        BlackBerry: function() {
-            return navigator.userAgent.match(/BlackBerry/i);
-        },
-        iOS: function() {
-            return navigator.userAgent.match(/iPhone|iPad|iPod/i);
-        },
-        Opera: function() {
-            return navigator.userAgent.match(/Opera Mini/i);
-        },
-        Windows: function() {
-            return navigator.userAgent.match(/IEMobile/i);
-        },
-        any: function() {
-            return isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows();
-        }
-    };
-    function fullVHfix() {
-        const fullScreens = document.querySelectorAll("[data-fullscreen]");
-        if (fullScreens.length && isMobile.any()) {
-            window.addEventListener("resize", fixHeight);
-            function fixHeight() {
-                let vh = .01 * window.innerHeight;
-                document.documentElement.style.setProperty("--vh", `${vh}px`);
-            }
-            fixHeight();
-        }
-    }
     let addWindowScrollEvent = false;
     setTimeout((() => {
         if (addWindowScrollEvent) {
@@ -68,6 +37,10 @@
     };
     window.addEventListener("resize", appHeight);
     appHeight();
+    if (document.querySelector(".game")) {
+        document.querySelector("html").classList.add("_game");
+        document.querySelector("body").classList.add("_game");
+    }
     const dots = document.querySelector(".preloader__dots");
     const preloader = document.querySelector(".preloader");
     const preloader_txt_hide = document.querySelectorAll(".acces-preloader__text-hide");
@@ -83,6 +56,7 @@
     if (sessionStorage.getItem("coins")) diamonds.textContent = sessionStorage.getItem("coins");
     if (sessionStorage.getItem("rocket") > 0) if (document.querySelector(".weapons__rocket")) document.querySelector(".weapons__rocket").classList.remove("_no-active");
     if (sessionStorage.getItem("bomb") > 0) if (document.querySelector(".weapons__bomb")) document.querySelector(".weapons__bomb").classList.remove("_no-active");
+    if (game) pause_button.classList.add("_visible");
     document.addEventListener("click", (e => {
         let targetElement = e.target;
         if (targetElement.closest(".acces-preloader__button")) {
@@ -226,8 +200,8 @@
     document.documentElement.clientHeight;
     let platform_cord_x = null;
     let platform_cord_y = null;
-    const blockWidth = 47;
-    const blockHeight = 52;
+    const blockWidth = 30;
+    const blockHeight = 35;
     const game_body = document.querySelector(".game__body");
     const game_ball = document.querySelector(".game__ball");
     const game_platform = document.querySelector(".game__platform");
@@ -235,7 +209,7 @@
     let currentPosition = platformStart;
     const platform_speed = 25;
     const platform_width = 270;
-    let ballStart = [ 49, 10 ];
+    let ballStart = [ 42, 10 ];
     let ballCurrentPosition = ballStart;
     const ball_diametr = 70;
     let xDirection = 1;
@@ -268,9 +242,6 @@
     }
     function move_platform() {
         document.querySelector(".game__platform").style.left = `${currentPosition[0]}px`;
-    }
-    function translate_ball_width() {
-        return 100 * ball_diametr / window_width;
     }
     let rocket_air_distance = 0;
     function move_rocket() {
@@ -405,7 +376,7 @@
         let ball_coordinate = document.querySelector(".game__ball");
         let ball_left = ball_coordinate.getBoundingClientRect().left;
         let ball_top = ball_coordinate.getBoundingClientRect().top;
-        if (ball_left + ball_diametr >= window_width) xDirection = -1; else if (ball_left <= 0) xDirection = 1; else if (ball_top <= 70) yDirection = -1;
+        if (ball_left + ball_diametr + 10 >= window_width) xDirection = -1; else if (ball_left <= 0) xDirection = 1; else if (ball_top <= 50) yDirection = -1;
     }
     if (sessionStorage.getItem("game-two")) document.querySelectorAll(".levels__button").forEach((el => {
         if (el.classList.contains("_hide")) el.classList.remove("_hide");
@@ -418,7 +389,44 @@
         }));
         if (active_blocks <= 0) {
             clearInterval(timerId);
-            document.querySelector(".play").classList.add("_active");
+            if (document.querySelector(".game_one")) setTimeout((() => {
+                monets.textContent = +monets.innerHTML + 1e3;
+                diamonds.textContent = +diamonds.innerHTML + 50;
+                sessionStorage.setItem("monets", monets.innerHTML);
+                sessionStorage.setItem("coins", diamonds.innerHTML);
+                monets.classList.add("_anim");
+                diamonds.classList.add("_anim");
+                setTimeout((() => {
+                    monets.classList.remove("_anim");
+                    diamonds.classList.remove("_anim");
+                }), 1e3);
+            }), 500); else if (document.querySelector(".game_two")) setTimeout((() => {
+                monets.textContent = +monets.innerHTML + 5e3;
+                diamonds.textContent = +diamonds.innerHTML + 150;
+                sessionStorage.setItem("monets", monets.innerHTML);
+                sessionStorage.setItem("coins", diamonds.innerHTML);
+                monets.classList.add("_anim");
+                diamonds.classList.add("_anim");
+                setTimeout((() => {
+                    monets.classList.remove("_anim");
+                    diamonds.classList.remove("_anim");
+                }), 1e3);
+            }), 500);
+            if (document.querySelector(".game_three")) setTimeout((() => {
+                monets.textContent = +monets.innerHTML + 1e4;
+                diamonds.textContent = +diamonds.innerHTML + 250;
+                sessionStorage.setItem("monets", monets.innerHTML);
+                sessionStorage.setItem("coins", diamonds.innerHTML);
+                monets.classList.add("_anim");
+                diamonds.classList.add("_anim");
+                setTimeout((() => {
+                    monets.classList.remove("_anim");
+                    diamonds.classList.remove("_anim");
+                }), 1e3);
+            }), 500);
+            setTimeout((() => {
+                document.querySelector(".play").classList.add("_active");
+            }), 1e3);
             if (document.querySelector(".game_one")) sessionStorage.setItem("game-one", true); else if (document.querySelector(".game_two")) sessionStorage.setItem("game-two", true); else if (document.querySelector(".game_three")) sessionStorage.setItem("game-three", true);
         }
     }
@@ -439,10 +447,10 @@
             let fruit_right = fruit[i].getBoundingClientRect().left + blockWidth;
             let fruit_top = fruit[i].getBoundingClientRect().top;
             let fruit_bottom = fruit[i].getBoundingClientRect().top + blockHeight;
-            if (ball_left + blockWidth > fruit_left && ball_top < fruit_bottom && ball_left < fruit_right && ball_top + blockHeight > fruit_top) {
+            if (ball_left + ball_diametr > fruit_left && ball_top < fruit_bottom && ball_left < fruit_right && ball_top + ball_diametr > fruit_top) {
                 fruit[i].classList.add("_hide");
                 fruit[i].dataset.destroy = 1;
-                if (ball_top <= fruit_bottom && 1 === yDirection && fruit[i].classList.contains("_hide")) yDirection = -1; else if (1 === xDirection && 1 === yDirection && fruit[i].classList.contains("_hide")) xDirection = -1; else if (-1 === xDirection && 1 === yDirection && fruit[i].classList.contains("_hide")) xDirection = 1; else if (-1 === yDirection && 1 === xDirection && fruit[i].classList.contains("_hide")) -1 === xDirection;
+                if (1 == yDirection && ball_top <= fruit_bottom) yDirection = -1; else if (1 == yDirection && ball_left <= fruit_right && ball_top + ball_diametr > fruit_top || -1 == yDirection && ball_left <= fruit_right && ball_top + ball_diametr) xDirection = 1; else if (-1 == yDirection && ball_top + ball_diametr + 10 >= fruit_top) yDirection = 1; else if (1 == yDirection && ball_left + ball_diametr > fruit_left || -1 == yDirection && ball_left + ball_diametr > fruit_left) xDirection = -1;
             }
         }
         if (flower) for (let i = 0; i < flower.length; i++) {
@@ -450,10 +458,10 @@
             let flower_right = flower[i].getBoundingClientRect().left + blockWidth;
             let flower_top = flower[i].getBoundingClientRect().top;
             let flower_bottom = flower[i].getBoundingClientRect().top + blockHeight;
-            if (ball_left + blockWidth > flower_left && ball_top < flower_bottom && ball_left < flower_right && ball_top + blockHeight > flower_top) {
+            if (ball_left + ball_diametr > flower_left && ball_top < flower_bottom && ball_left < flower_right && ball_top + ball_diametr > flower_top) {
                 flower[i].classList.add("_hide");
                 flower[i].dataset.destroy = 1;
-                if (ball_top <= flower_bottom && 1 === yDirection && flower[i].classList.contains("_hide")) yDirection = -1; else if (1 === xDirection && 1 === yDirection && flower[i].classList.contains("_hide")) xDirection = -1; else if (-1 === xDirection && 1 === yDirection && flower[i].classList.contains("_hide")) xDirection = 1; else if (-1 === yDirection && 1 === xDirection && flower[i].classList.contains("_hide")) -1 === xDirection;
+                if (1 == yDirection && ball_top <= flower_bottom) yDirection = -1; else if (1 == yDirection && ball_top <= flower_bottom) yDirection = -1; else if (-1 == xDirection && 1 == yDirection && ball_left <= flower_right) xDirection = 1; else if (-1 == xDirection && -1 == yDirection && ball_left <= flower_right) xDirection = 1; else if (-1 == yDirection && ball_top + ball_diametr >= flower_top) yDirection = 1; else if (1 == xDirection && ball_left + ball_diametr > flower_left) xDirection = -1;
             }
         }
         if (lemon) for (let i = 0; i < lemon.length; i++) {
@@ -461,11 +469,11 @@
             let lemon_right = lemon[i].getBoundingClientRect().left + blockWidth;
             let lemon_top = lemon[i].getBoundingClientRect().top;
             let lemon_bottom = lemon[i].getBoundingClientRect().top + blockHeight;
-            if (ball_left + blockWidth > lemon_left && ball_top < lemon_bottom && ball_left < lemon_right && ball_top + blockHeight > lemon_top) {
+            if (ball_left + ball_diametr > lemon_left && ball_top < lemon_bottom && ball_left < lemon_right && ball_top + ball_diametr > lemon_top) {
                 lemon[i].style.opacity = "0";
                 lemon[i].dataset.destroy = 1;
                 lemon[i].classList.add("_hide");
-                if (ball_top <= lemon_bottom && 1 === yDirection && lemon[i].classList.contains("_hide")) yDirection = -1; else if (1 === xDirection && 1 === yDirection && lemon[i].classList.contains("_hide")) xDirection = -1; else if (ball_left <= lemon_right && -1 === xDirection && 1 === yDirection && lemon[i].classList.contains("_hide")) xDirection = 1; else if (-1 === yDirection && 1 === xDirection && lemon[i].classList.contains("_hide")) -1 === xDirection;
+                if (1 == yDirection && ball_top <= lemon_bottom) yDirection = -1; else if (1 == yDirection && ball_left <= lemon_right || -1 == yDirection && ball_left <= lemon_right) xDirection = 1; else if (-1 == yDirection && ball_top + ball_diametr + 10 >= lemon_top) yDirection = 1; else if (1 == yDirection && ball_left + ball_diametr > lemon_left || -1 == yDirection && ball_left + ball_diametr > lemon_left) xDirection = -1;
             }
         }
         if (orange) for (let i = 0; i < orange.length; i++) {
@@ -473,11 +481,11 @@
             let orange_right = orange[i].getBoundingClientRect().left + blockWidth;
             let orange_top = orange[i].getBoundingClientRect().top;
             let orange_bottom = orange[i].getBoundingClientRect().top + blockHeight;
-            if (ball_left + blockWidth > orange_left && ball_top < orange_bottom && ball_left < orange_right && ball_top + blockHeight > orange_top) {
+            if (ball_left + ball_diametr > orange_left && ball_top < orange_bottom && ball_left < orange_right && ball_top + ball_diametr > orange_top) {
                 orange[i].style.opacity = "0";
                 orange[i].dataset.destroy = 1;
                 orange[i].classList.add("_hide");
-                if (ball_top <= orange_bottom && 1 === yDirection && orange[i].classList.contains("_hide")) yDirection = -1; else if (1 === xDirection && 1 === yDirection && orange[i].classList.contains("_hide")) xDirection = -1; else if (ball_left <= orange_right && -1 === xDirection && 1 === yDirection && orange[i].classList.contains("_hide")) xDirection = 1; else if (-1 === yDirection && 1 === xDirection && orange[i].classList.contains("_hide")) -1 === xDirection;
+                if (1 == yDirection && ball_top <= orange_bottom) yDirection = -1; else if (1 == yDirection && ball_left <= orange_right || -1 == yDirection && ball_left <= orange_right) xDirection = 1; else if (-1 == yDirection && ball_top + ball_diametr + 10 >= orange_top) yDirection = 1; else if (1 == yDirection && ball_left + ball_diametr > orange_left || -1 == yDirection && ball_left + ball_diametr > orange_left) xDirection = -1;
             }
         }
         if (bag) for (let i = 0; i < bag.length; i++) {
@@ -485,19 +493,31 @@
             let bag_right = bag[i].getBoundingClientRect().left + blockWidth;
             let bag_top = bag[i].getBoundingClientRect().top;
             let bag_bottom = bag[i].getBoundingClientRect().top + blockHeight;
-            if (ball_left + blockWidth > bag_left && ball_top < bag_bottom && ball_left < bag_right && ball_top + blockHeight > bag_top) {
+            if (ball_left + ball_diametr > bag_left && ball_top < bag_bottom && ball_left < bag_right && ball_top + ball_diametr > bag_top) {
                 bag[i].style.opacity = "0";
                 bag[i].dataset.destroy = 1;
                 bag[i].classList.add("_hide");
-                if (ball_top <= bag_bottom && 1 === yDirection && bag[i].classList.contains("_hide")) yDirection = -1; else if (1 === xDirection && 1 === yDirection && bag[i].classList.contains("_hide")) xDirection = -1; else if (ball_left <= bag_right && -1 === xDirection && 1 === yDirection && bag[i].classList.contains("_hide")) xDirection = 1; else if (-1 === yDirection && 1 === xDirection && bag[i].classList.contains("_hide")) -1 === xDirection;
+                if (1 == yDirection && ball_top <= bag_bottom) yDirection = -1; else if (1 == yDirection && ball_left <= bag_right || -1 == yDirection && ball_left <= bag_right) xDirection = 1; else if (-1 == yDirection && ball_top + ball_diametr + 10 >= bag_top) yDirection = 1; else if (1 == yDirection && ball_left + ball_diametr > bag_left || -1 == yDirection && ball_left + ball_diametr > bag_left) xDirection = -1;
             }
         }
-        if (ballCurrentPosition[0] >= 100 - translate_ball_width() || ballCurrentPosition[1] >= 100 - translate_ball_width() || ballCurrentPosition[0] <= 0 || ballCurrentPosition[1] <= 0) change_direction();
+        if (ball_left + ball_diametr + 10 >= window_width || ball_left <= 0 || ball_top <= 50) change_direction();
         if (ballCurrentPosition[1] <= 0) {
             clearInterval(timerId);
             game_ball.classList.add("_hide");
             let lifes = +document.querySelector(".header-wrapper_lifes").innerHTML;
-            if (lifes <= 0) document.querySelector(".loose").classList.add("_active"); else {
+            if (lifes <= 0) {
+                setTimeout((() => {
+                    document.querySelector(".loose").classList.add("_active");
+                }), 600);
+                setTimeout((() => {
+                    monets.textContent = +monets.innerHTML + 500;
+                    sessionStorage.setItem("monets", monets.innerHTML);
+                    monets.classList.add("_anim");
+                    setTimeout((() => {
+                        monets.classList.remove("_anim");
+                    }), 1e3);
+                }), 500);
+            } else {
                 lifes--;
                 setTimeout((() => {
                     document.querySelector(".header-wrapper_lifes").textContent = lifes;
@@ -743,5 +763,4 @@
     }
     window["FLS"] = true;
     isWebp();
-    fullVHfix();
 })();

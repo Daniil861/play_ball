@@ -52,10 +52,23 @@
     const pause_item = document.querySelector(".pause");
     let monets = document.querySelector(".header-wrapper__count_points");
     let diamonds = document.querySelector(".header-wrapper__count_time");
+    let bomb_count = document.querySelector(".weapons__count_bomb");
+    let ball_count = document.querySelector(".weapons__count_ball");
+    let rocket_count = document.querySelector(".weapons__count_rocket");
     if (sessionStorage.getItem("monets")) monets.textContent = sessionStorage.getItem("monets");
     if (sessionStorage.getItem("coins")) diamonds.textContent = sessionStorage.getItem("coins");
-    if (sessionStorage.getItem("rocket") > 0) if (document.querySelector(".weapons__rocket")) document.querySelector(".weapons__rocket").classList.remove("_no-active");
-    if (sessionStorage.getItem("bomb") > 0) if (document.querySelector(".weapons__bomb")) document.querySelector(".weapons__bomb").classList.remove("_no-active");
+    if (sessionStorage.getItem("rocket") > 0) if (document.querySelector(".weapons__rocket")) {
+        document.querySelector(".weapons__rocket").classList.remove("_no-active");
+        rocket_count.textContent = sessionStorage.getItem("rocket");
+    }
+    if (sessionStorage.getItem("bomb") > 0) if (document.querySelector(".weapons__bomb")) {
+        document.querySelector(".weapons__bomb").classList.remove("_no-active");
+        bomb_count.textContent = sessionStorage.getItem("bomb");
+    }
+    if (sessionStorage.getItem("ball") > 0) if (document.querySelector(".weapons__ball")) {
+        document.querySelector(".weapons__ball").classList.remove("_no-active");
+        ball_count.textContent = sessionStorage.getItem("ball");
+    }
     if (game) pause_button.classList.add("_visible");
     document.addEventListener("click", (e => {
         let targetElement = e.target;
@@ -88,6 +101,12 @@
             }), 1e3);
         }
         if (targetElement.closest(".shop__item_ball")) if (+monets.innerHTML >= 9e4) {
+            document.querySelector(".shop__icon_ball").classList.add("_anim");
+            document.querySelector(".shop__item_ball").classList.add("_hide");
+            setTimeout((() => {
+                document.querySelector(".shop__icon_ball").classList.remove("_anim");
+                document.querySelector(".shop__item_ball").classList.remove("_hide");
+            }), 1500);
             setTimeout((() => {
                 monets.innerHTML = +monets.innerHTML - 9e4;
                 sessionStorage.setItem("monets", monets.innerHTML);
@@ -107,6 +126,12 @@
             }), 1e3);
         }
         if (targetElement.closest(".shop__item_bomb")) if (+diamonds.innerHTML >= 50) {
+            document.querySelector(".shop__icon_bomb").classList.add("_anim");
+            document.querySelector(".shop__item_bomb").classList.add("_hide");
+            setTimeout((() => {
+                document.querySelector(".shop__icon_bomb").classList.remove("_anim");
+                document.querySelector(".shop__item_bomb").classList.remove("_hide");
+            }), 1500);
             setTimeout((() => {
                 diamonds.innerHTML = +diamonds.innerHTML - 50;
                 sessionStorage.setItem("coins", diamonds.innerHTML);
@@ -126,6 +151,12 @@
             }), 1e3);
         }
         if (targetElement.closest(".shop__item_rocket")) if (+monets.innerHTML >= 200) {
+            document.querySelector(".shop__icon_rocket").classList.add("_anim");
+            document.querySelector(".shop__item_rocket").classList.add("_hide");
+            setTimeout((() => {
+                document.querySelector(".shop__icon_rocket").classList.remove("_anim");
+                document.querySelector(".shop__item_rocket").classList.remove("_hide");
+            }), 1500);
             setTimeout((() => {
                 monets.innerHTML = +monets.innerHTML - 200;
                 sessionStorage.setItem("monets", monets.innerHTML);
@@ -200,8 +231,8 @@
     document.documentElement.clientHeight;
     let platform_cord_x = null;
     let platform_cord_y = null;
-    const blockWidth = 30;
-    const blockHeight = 35;
+    const blockWidth = 47;
+    const blockHeight = 52;
     const game_body = document.querySelector(".game__body");
     const game_ball = document.querySelector(".game__ball");
     const game_platform = document.querySelector(".game__platform");
@@ -212,8 +243,8 @@
     let ballStart = [ 42, 10 ];
     let ballCurrentPosition = ballStart;
     const ball_diametr = 70;
-    let xDirection = 1;
-    let yDirection = 1;
+    let xDirection = 1.2;
+    let yDirection = 1.2;
     let timerId;
     function handleTouchStart(e) {
         let targetElement = e.target;
@@ -281,6 +312,7 @@
         let rockets_memory = +sessionStorage.getItem("rocket");
         rockets_memory--;
         sessionStorage.setItem("rocket", rockets_memory);
+        rocket_count.textContent = sessionStorage.getItem("rocket");
         setTimeout((() => {
             if (sessionStorage.getItem("rocket") > 0) document.querySelector(".weapons__rocket").classList.remove("_no-active");
         }), 1e3);
@@ -319,6 +351,7 @@
         let bomb_memory = +sessionStorage.getItem("bomb");
         bomb_memory--;
         sessionStorage.setItem("bomb", bomb_memory);
+        bomb_count.textContent = sessionStorage.getItem("bomb");
         setTimeout((() => {
             if (sessionStorage.getItem("bomb") > 0) document.querySelector(".weapons__bomb").classList.remove("_no-active");
             bomb.remove();
@@ -364,6 +397,7 @@
         let ball_memory = +sessionStorage.getItem("ball");
         ball_memory--;
         sessionStorage.setItem("ball", ball_memory);
+        ball_count.textContent = sessionStorage.getItem("ball");
         setTimeout((() => {
             if (sessionStorage.getItem("ball") > 0) document.querySelector(".weapons__ball").classList.remove("_no-active");
         }), 1e3);
@@ -376,7 +410,7 @@
         let ball_coordinate = document.querySelector(".game__ball");
         let ball_left = ball_coordinate.getBoundingClientRect().left;
         let ball_top = ball_coordinate.getBoundingClientRect().top;
-        if (ball_left + ball_diametr + 10 >= window_width) xDirection = -1; else if (ball_left <= 0) xDirection = 1; else if (ball_top <= 50) yDirection = -1;
+        if (ball_left + ball_diametr + 10 >= window_width) xDirection = -1.2; else if (ball_left <= 0) xDirection = 1.2; else if (ball_top <= 50) yDirection = -1.2;
     }
     if (sessionStorage.getItem("game-two")) document.querySelectorAll(".levels__button").forEach((el => {
         if (el.classList.contains("_hide")) el.classList.remove("_hide");
@@ -450,7 +484,7 @@
             if (ball_left + ball_diametr > fruit_left && ball_top < fruit_bottom && ball_left < fruit_right && ball_top + ball_diametr > fruit_top) {
                 fruit[i].classList.add("_hide");
                 fruit[i].dataset.destroy = 1;
-                if (1 == yDirection && ball_top <= fruit_bottom) yDirection = -1; else if (1 == yDirection && ball_left <= fruit_right && ball_top + ball_diametr > fruit_top || -1 == yDirection && ball_left <= fruit_right && ball_top + ball_diametr) xDirection = 1; else if (-1 == yDirection && ball_top + ball_diametr + 10 >= fruit_top) yDirection = 1; else if (1 == yDirection && ball_left + ball_diametr > fruit_left || -1 == yDirection && ball_left + ball_diametr > fruit_left) xDirection = -1;
+                if (1.2 == yDirection && ball_top <= fruit_bottom) yDirection = -1.2; else if (1.2 == yDirection && ball_left <= fruit_right && ball_top + ball_diametr > fruit_top || -1.2 == yDirection && ball_left <= fruit_right && ball_top + ball_diametr) xDirection = 1.2; else if (-1.2 == yDirection && ball_top + ball_diametr + 10 >= fruit_top) yDirection = 1.2; else if (1.2 == yDirection && ball_left + ball_diametr > fruit_left || -1.2 == yDirection && ball_left + ball_diametr > fruit_left) xDirection = -1.2;
             }
         }
         if (flower) for (let i = 0; i < flower.length; i++) {
@@ -461,7 +495,7 @@
             if (ball_left + ball_diametr > flower_left && ball_top < flower_bottom && ball_left < flower_right && ball_top + ball_diametr > flower_top) {
                 flower[i].classList.add("_hide");
                 flower[i].dataset.destroy = 1;
-                if (1 == yDirection && ball_top <= flower_bottom) yDirection = -1; else if (1 == yDirection && ball_top <= flower_bottom) yDirection = -1; else if (-1 == xDirection && 1 == yDirection && ball_left <= flower_right) xDirection = 1; else if (-1 == xDirection && -1 == yDirection && ball_left <= flower_right) xDirection = 1; else if (-1 == yDirection && ball_top + ball_diametr >= flower_top) yDirection = 1; else if (1 == xDirection && ball_left + ball_diametr > flower_left) xDirection = -1;
+                if (1.2 == yDirection && ball_top <= flower_bottom) yDirection = -1.2; else if (1.2 == yDirection && ball_top <= flower_bottom) yDirection = -1.2; else if (-1.2 == xDirection && 1.2 == yDirection && ball_left <= flower_right) xDirection = 1.2; else if (-1.2 == xDirection && -1.2 == yDirection && ball_left <= flower_right) xDirection = 1.2; else if (-1.2 == yDirection && ball_top + ball_diametr >= flower_top) yDirection = 1.2; else if (1.2 == xDirection && ball_left + ball_diametr > flower_left) xDirection = -1.2;
             }
         }
         if (lemon) for (let i = 0; i < lemon.length; i++) {
@@ -473,7 +507,7 @@
                 lemon[i].style.opacity = "0";
                 lemon[i].dataset.destroy = 1;
                 lemon[i].classList.add("_hide");
-                if (1 == yDirection && ball_top <= lemon_bottom) yDirection = -1; else if (1 == yDirection && ball_left <= lemon_right || -1 == yDirection && ball_left <= lemon_right) xDirection = 1; else if (-1 == yDirection && ball_top + ball_diametr + 10 >= lemon_top) yDirection = 1; else if (1 == yDirection && ball_left + ball_diametr > lemon_left || -1 == yDirection && ball_left + ball_diametr > lemon_left) xDirection = -1;
+                if (1.2 == yDirection && ball_top <= lemon_bottom) yDirection = -1.2; else if (1.2 == yDirection && ball_left <= lemon_right || -1.2 == yDirection && ball_left <= lemon_right) xDirection = 1.2; else if (-1.2 == yDirection && ball_top + ball_diametr + 10 >= lemon_top) yDirection = 1.2; else if (1.2 == yDirection && ball_left + ball_diametr > lemon_left || -1.2 == yDirection && ball_left + ball_diametr > lemon_left) xDirection = -1.2;
             }
         }
         if (orange) for (let i = 0; i < orange.length; i++) {
@@ -485,7 +519,7 @@
                 orange[i].style.opacity = "0";
                 orange[i].dataset.destroy = 1;
                 orange[i].classList.add("_hide");
-                if (1 == yDirection && ball_top <= orange_bottom) yDirection = -1; else if (1 == yDirection && ball_left <= orange_right || -1 == yDirection && ball_left <= orange_right) xDirection = 1; else if (-1 == yDirection && ball_top + ball_diametr + 10 >= orange_top) yDirection = 1; else if (1 == yDirection && ball_left + ball_diametr > orange_left || -1 == yDirection && ball_left + ball_diametr > orange_left) xDirection = -1;
+                if (1.2 == yDirection && ball_top <= orange_bottom) yDirection = -1.2; else if (1.2 == yDirection && ball_left <= orange_right || -1.2 == yDirection && ball_left <= orange_right) xDirection = 1.2; else if (-1.2 == yDirection && ball_top + ball_diametr + 10 >= orange_top) yDirection = 1.2; else if (1.2 == yDirection && ball_left + ball_diametr > orange_left || -1.2 == yDirection && ball_left + ball_diametr > orange_left) xDirection = -1.2;
             }
         }
         if (bag) for (let i = 0; i < bag.length; i++) {
@@ -497,7 +531,7 @@
                 bag[i].style.opacity = "0";
                 bag[i].dataset.destroy = 1;
                 bag[i].classList.add("_hide");
-                if (1 == yDirection && ball_top <= bag_bottom) yDirection = -1; else if (1 == yDirection && ball_left <= bag_right || -1 == yDirection && ball_left <= bag_right) xDirection = 1; else if (-1 == yDirection && ball_top + ball_diametr + 10 >= bag_top) yDirection = 1; else if (1 == yDirection && ball_left + ball_diametr > bag_left || -1 == yDirection && ball_left + ball_diametr > bag_left) xDirection = -1;
+                if (1.2 == yDirection && ball_top <= bag_bottom) yDirection = -1.2; else if (1.2 == yDirection && ball_left <= bag_right || -1.2 == yDirection && ball_left <= bag_right) xDirection = 1.2; else if (-1.2 == yDirection && ball_top + ball_diametr + 10 >= bag_top) yDirection = 1.2; else if (1.2 == yDirection && ball_left + ball_diametr > bag_left || -1.2 == yDirection && ball_left + ball_diametr > bag_left) xDirection = -1.2;
             }
         }
         if (ball_left + ball_diametr + 10 >= window_width || ball_left <= 0 || ball_top <= 50) change_direction();
@@ -535,7 +569,7 @@
                 }), 500);
             }
         }
-        if (ball_left + ball_diametr >= platform_left + 50 && ball_left + ball_diametr <= platform_left + platform_width && ballCurrentPosition[1] <= 10) yDirection = 1;
+        if (ball_left + ball_diametr >= platform_left + 50 && ball_left + ball_diametr <= platform_left + platform_width && ballCurrentPosition[1] <= 10) yDirection = 1.2;
     }
     function moveBall() {
         ballCurrentPosition[0] += xDirection;

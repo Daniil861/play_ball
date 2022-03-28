@@ -22,6 +22,386 @@
             }));
         }
     }), 0);
+    !function n(s, r, o) {
+        function a(i, t) {
+            if (!r[i]) {
+                if (!s[i]) {
+                    var e = "function" == typeof require && require;
+                    if (!t && e) return e(i, !0);
+                    if (h) return h(i, !0);
+                    throw (e = new Error("Cannot find module '" + i + "'")).code = "MODULE_NOT_FOUND", 
+                    e;
+                }
+                e = r[i] = {
+                    exports: {}
+                }, s[i][0].call(e.exports, (function(t) {
+                    return a(s[i][1][t] || t);
+                }), e, e.exports, n, s, r, o);
+            }
+            return r[i].exports;
+        }
+        for (var h = "function" == typeof require && require, t = 0; t < o.length; t++) a(o[t]);
+        return a;
+    }({
+        1: [ function(t, i, e) {
+            "use strict";
+            window.SlotMachine = t("./slot-machine");
+        }, {
+            "./slot-machine": 3
+        } ],
+        2: [ function(t, i, e) {
+            "use strict";
+            var n = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+            i.exports = function(t) {
+                setTimeout((function() {
+                    return n(t);
+                }), 1 < arguments.length && void 0 !== arguments[1] ? arguments[1] : 0);
+            };
+        }, {} ],
+        3: [ function(t, i, e) {
+            "use strict";
+            var n = function(t, i, e) {
+                return i && s(t.prototype, i), e && s(t, e), t;
+            };
+            function s(t, i) {
+                for (var e = 0; e < i.length; e++) {
+                    var n = i[e];
+                    n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n && (n.writable = !0), 
+                    Object.defineProperty(t, n.key, n);
+                }
+            }
+            var r = t("./timer"), o = t("./raf"), a = {
+                active: 0,
+                delay: 200,
+                auto: !1,
+                spins: 5,
+                randomize: null,
+                onComplete: null,
+                inViewport: !0,
+                direction: "up",
+                transition: "ease-in-out"
+            }, h = "slotMachineNoTransition", u = "slotMachineBlurFast", c = "slotMachineBlurMedium", l = "slotMachineBlurSlow", f = "slotMachineBlurTurtle", d = "slotMachineGradient", v = d;
+            n = (n(g, [ {
+                key: "changeSettings",
+                value: function(i) {
+                    var e = this;
+                    Object.keys(i).forEach((function(t) {
+                        e[t] = i[t];
+                    }));
+                }
+            }, {
+                key: "_wrapTiles",
+                value: function() {
+                    var i = this;
+                    this.container = document.createElement("div"), this.container.classList.add("slotMachineContainer"), 
+                    this.container.style.transition = "1s ease-in-out", this.element.appendChild(this.container), 
+                    this._fakeFirstTile = this.tiles[this.tiles.length - 1].cloneNode(!0), this.container.appendChild(this._fakeFirstTile), 
+                    this.tiles.forEach((function(t) {
+                        i.container.appendChild(t);
+                    })), this._fakeLastTile = this.tiles[0].cloneNode(!0), this.container.appendChild(this._fakeLastTile);
+                }
+            }, {
+                key: "_setBounds",
+                value: function() {
+                    var t = this.getTileOffset(this.active), i = this.getTileOffset(this.tiles.length), e = this.getTileOffset(this.tiles.length);
+                    this._bounds = {
+                        up: {
+                            key: "up",
+                            initial: t,
+                            first: 0,
+                            last: e,
+                            to: this._maxTop,
+                            firstToLast: e,
+                            lastToFirst: 0
+                        },
+                        down: {
+                            key: "down",
+                            initial: t,
+                            first: i,
+                            last: 0,
+                            to: this._minTop,
+                            firstToLast: e,
+                            lastToFirst: 0
+                        }
+                    };
+                }
+            }, {
+                key: "_changeTransition",
+                value: function() {
+                    var t = 0 < arguments.length && void 0 !== arguments[0] ? arguments[0] : this.delay, i = 1 < arguments.length && void 0 !== arguments[1] ? arguments[1] : this.transition;
+                    this.container.style.transition = t / 1e3 + "s " + i;
+                }
+            }, {
+                key: "_changeTransform",
+                value: function(t) {
+                    this.container.style.transform = "matrix(1, 0, 0, 1, 0, " + t + ")";
+                }
+            }, {
+                key: "_isGoingBackward",
+                value: function() {
+                    return this.nextActive > this.active && 0 === this.active && this.nextActive === this.tiles.length - 1;
+                }
+            }, {
+                key: "_isGoingForward",
+                value: function() {
+                    return this.nextActive <= this.active && this.active === this.tiles.length - 1 && 0 === this.nextActive;
+                }
+            }, {
+                key: "getTileOffset",
+                value: function(t) {
+                    for (var i = 0, e = 0; e < t; e++) i += this.tiles[e].offsetHeight;
+                    return this._minTop - i;
+                }
+            }, {
+                key: "_resetPosition",
+                value: function(t) {
+                    this.container.classList.toggle(h), this._changeTransform(isNaN(t) ? this.bounds.initial : t), 
+                    this.container.offsetHeight, this.container.classList.toggle(h);
+                }
+            }, {
+                key: "prev",
+                value: function() {
+                    return this.nextActive = this.prevIndex, this.running = !0, this.stop(), this.nextActive;
+                }
+            }, {
+                key: "next",
+                value: function() {
+                    return this.nextActive = this.nextIndex, this.running = !0, this.stop(), this.nextActive;
+                }
+            }, {
+                key: "_getDelayFromSpins",
+                value: function(t) {
+                    var i = this.delay;
+                    switch (this.transition = "linear", t) {
+                      case 1:
+                        i /= .5, this.transition = "ease-out", this._animationFX = f;
+                        break;
+
+                      case 2:
+                        i /= .75, this._animationFX = l;
+                        break;
+
+                      case 3:
+                        i /= 1, this._animationFX = c;
+                        break;
+
+                      case 4:
+                        i /= 1.25, this._animationFX = c;
+                        break;
+
+                      default:
+                        i /= 1.5, this._animationFX = u;
+                    }
+                    return i;
+                }
+            }, {
+                key: "shuffle",
+                value: function(i, e) {
+                    var t, n = this;
+                    return "function" == typeof i && (e = i), this.running = !0, this.visible || !0 !== this.inViewport ? (t = this._getDelayFromSpins(i), 
+                    this._changeTransition(t), this._changeTransform(this.bounds.to), o((function() {
+                        var t;
+                        !n.stopping && n.running && (t = i - 1, n._resetPosition(n.bounds.first), 1 < t ? n.shuffle(t, e) : n.stop(e));
+                    }), t)) : this.stop(e), this.nextActive;
+                }
+            }, {
+                key: "stop",
+                value: function(t) {
+                    var i = this;
+                    if (!this.running || this.stopping) return this.nextActive;
+                    this.running = !0, this.stopping = !0, Number.isInteger(this.nextActive) || (this.nextActive = this.custom), 
+                    this._isGoingBackward() ? this._resetPosition(this.bounds.firstToLast) : this._isGoingForward() && this._resetPosition(this.bounds.lastToFirst), 
+                    this.active = this.nextActive;
+                    var e = this._getDelayFromSpins(1);
+                    return this._changeTransition(e), this._animationFX = v, this._changeTransform(this.getTileOffset(this.active)), 
+                    o((function() {
+                        i.stopping = !1, i.running = !1, i.nextActive = null, "function" == typeof i.onComplete && i.onComplete(i.active), 
+                        "function" == typeof t && t.apply(i, [ i.active ]);
+                    }), e), this.active;
+                }
+            }, {
+                key: "run",
+                value: function() {
+                    var t = this;
+                    this.running || (this._timer = new r((function() {
+                        t.visible || !0 !== t.inViewport ? t.shuffle(t.spins, (function() {
+                            t._timer.reset();
+                        })) : o((function() {
+                            t._timer.reset();
+                        }), 500);
+                    }), this.auto));
+                }
+            }, {
+                key: "destroy",
+                value: function() {
+                    var i = this;
+                    this._fakeFirstTile.remove(), this._fakeLastTile.remove(), this.tiles.forEach((function(t) {
+                        i.element.appendChild(t);
+                    })), this.container.remove();
+                }
+            }, {
+                key: "active",
+                get: function() {
+                    return this._active;
+                },
+                set: function(t) {
+                    ((t = Number(t)) < 0 || t >= this.tiles.length || isNaN(t)) && (t = 0), this._active = t;
+                }
+            }, {
+                key: "direction",
+                get: function() {
+                    return this._direction;
+                },
+                set: function(t) {
+                    this.running || (this._direction = "down" === t ? "down" : "up");
+                }
+            }, {
+                key: "bounds",
+                get: function() {
+                    return this._bounds[this._direction];
+                }
+            }, {
+                key: "transition",
+                get: function() {
+                    return this._transition;
+                },
+                set: function(t) {
+                    this._transition = t || "ease-in-out";
+                }
+            }, {
+                key: "visibleTile",
+                get: function() {
+                    var t = this.tiles[0].offsetHeight, i = this.container.style.transform || "";
+                    i = parseInt(i.replace(/^matrix\(-?\d+,\s?-?\d+,\s?-?\d+,\s?-?\d+,\s?-?\d+,\s?(-?\d+)\)$/, "$1"), 10);
+                    return Math.abs(Math.round(i / t)) - 1;
+                }
+            }, {
+                key: "random",
+                get: function() {
+                    return Math.floor(Math.random() * this.tiles.length);
+                }
+            }, {
+                key: "custom",
+                get: function() {
+                    var t;
+                    return this.randomize ? (((t = this.randomize(this.active)) < 0 || t >= this.tiles.length) && (t = 0), 
+                    t) : this.random;
+                }
+            }, {
+                key: "_prevIndex",
+                get: function() {
+                    var t = this.active - 1;
+                    return t < 0 ? this.tiles.length - 1 : t;
+                }
+            }, {
+                key: "_nextIndex",
+                get: function() {
+                    var t = this.active + 1;
+                    return t < this.tiles.length ? t : 0;
+                }
+            }, {
+                key: "prevIndex",
+                get: function() {
+                    return "up" === this.direction ? this._nextIndex : this._prevIndex;
+                }
+            }, {
+                key: "nextIndex",
+                get: function() {
+                    return "up" === this.direction ? this._prevIndex : this._nextIndex;
+                }
+            }, {
+                key: "visible",
+                get: function() {
+                    var t = this.element.getBoundingClientRect(), i = window.innerHeight || document.documentElement.clientHeight, e = window.innerWidth || document.documentElement.clientWidth;
+                    i = t.top <= i && 0 <= t.top + t.height, t = t.left <= e && 0 <= t.left + t.width;
+                    return i && t;
+                }
+            }, {
+                key: "_animationFX",
+                set: function(i) {
+                    var t = this, e = this.delay / 4;
+                    o((function() {
+                        [].concat(function(t) {
+                            if (Array.isArray(t)) {
+                                for (var i = 0, e = Array(t.length); i < t.length; i++) e[i] = t[i];
+                                return e;
+                            }
+                            return Array.from(t);
+                        }(t.tiles), [ t._fakeLastTile, t._fakeFirstTile ]).forEach((function(t) {
+                            t.classList.remove(u, c, l, f), i !== v && t.classList.add(i);
+                        })), i === v ? t.container.classList.remove(d) : t.container.classList.add(d);
+                    }), e);
+                }
+            } ]), g);
+            function g(t, i) {
+                !function(t) {
+                    if (!(t instanceof g)) throw new TypeError("Cannot call a class as a function");
+                }(this), this.element = t, this.tiles = [].slice.call(this.element.children), this.running = !1, 
+                this.stopping = !1, this.element.style.overflow = "hidden", this._wrapTiles(), this._minTop = -this._fakeFirstTile.offsetHeight, 
+                this._maxTop = -this.tiles.reduce((function(t, i) {
+                    return t + i.offsetHeight;
+                }), 0), this.changeSettings(Object.assign({}, a, i)), this._setBounds(), this._resetPosition(), 
+                !1 !== this.auto && this.run();
+            }
+            i.exports = n;
+        }, {
+            "./raf": 2,
+            "./timer": 4
+        } ],
+        4: [ function(t, i, e) {
+            "use strict";
+            var n = function(t, i, e) {
+                return i && s(t.prototype, i), e && s(t, e), t;
+            };
+            function s(t, i) {
+                for (var e = 0; e < i.length; e++) {
+                    var n = i[e];
+                    n.enumerable = n.enumerable || !1, n.configurable = !0, "value" in n && (n.writable = !0), 
+                    Object.defineProperty(t, n.key, n);
+                }
+            }
+            function r(t, i) {
+                return function(t) {
+                    if (!(t instanceof r)) throw new TypeError("Cannot call a class as a function");
+                }(this), this.cb = t, this.initialDelay = i, this.delay = i, this.startTime = null, 
+                this.timer = null, this.running = !1, this.resume(), this;
+            }
+            i.exports = (n(r, [ {
+                key: "_start",
+                value: function() {
+                    var t = this;
+                    this.timer = setTimeout((function() {
+                        t.running = !1, t.cb(t);
+                    }), this.delay);
+                }
+            }, {
+                key: "cancel",
+                value: function() {
+                    this.running = !1, clearTimeout(this.timer);
+                }
+            }, {
+                key: "pause",
+                value: function() {
+                    this.running && (this.delay -= (new Date).getTime() - this.startTime, this.cancel());
+                }
+            }, {
+                key: "resume",
+                value: function() {
+                    this.running || (this.running = !0, this.startTime = (new Date).getTime(), this._start());
+                }
+            }, {
+                key: "reset",
+                value: function() {
+                    this.cancel(), this.delay = this.initialDelay, this._start();
+                }
+            }, {
+                key: "add",
+                value: function(t) {
+                    this.pause(), this.delay += t, this.resume();
+                }
+            } ]), r);
+        }, {} ]
+    }, {}, [ 1 ]);
     window.addEventListener("load", (function() {
         if (document.querySelector("body")) setTimeout((function() {
             document.querySelector("body").classList.add("_loaded");
@@ -594,189 +974,119 @@
         let text_two = document.createElement("div");
         let text_three = document.createElement("div");
         if (0 == arrBonuses[0]) {
-            image_one.setAttribute("src", "img/icons/ball-2.svg");
-            image_one.setAttribute("alt", "Image");
-            item_one.append(image_one);
-            document.querySelector(".bonus__prize_one").append(item_one);
-            if (sessionStorage.getItem("ball")) {
-                let ball = +sessionStorage.getItem("ball");
-                sessionStorage.setItem("ball", ball + 1);
-            } else sessionStorage.setItem("ball", 1);
+            create_item(image_one, "ball-2", item_one, "one");
+            add_ball();
         } else if (1 == arrBonuses[0]) {
-            image_one.setAttribute("src", "img/icons/bomb.svg");
-            image_one.setAttribute("alt", "Image");
-            item_one.append(image_one);
-            document.querySelector(".bonus__prize_one").append(item_one);
-            if (sessionStorage.getItem("bomb")) {
-                let bomb = +sessionStorage.getItem("bomb");
-                sessionStorage.setItem("bomb", bomb + 1);
-            } else sessionStorage.setItem("bomb", 1);
+            create_item(image_one, "bomb", item_one, "one");
+            add_bomb();
         } else if (2 == arrBonuses[0]) {
             text_one.classList.add("bonus__text");
             let num = get_random_monet();
             text_one.textContent = `+${num}`;
-            setTimeout((() => {
-                monets.textContent = +monets.innerHTML + num;
-                sessionStorage.setItem("monets", monets.innerHTML);
-                monets.classList.add("_anim");
-                setTimeout((() => {
-                    monets.classList.remove("_anim");
-                }), 1e3);
-            }), 500);
-            image_one.setAttribute("src", "img/icons/dot.svg");
-            image_one.setAttribute("alt", "Image");
-            item_one.append(image_one, text_one);
-            document.querySelector(".bonus__prize_one").append(item_one);
+            add_money(num);
+            create_item(image_one, "dot", item_one, "one", text_one);
         } else if (3 == arrBonuses[0]) {
-            image_one.setAttribute("src", "img/icons/rocket.svg");
-            image_one.setAttribute("alt", "Image");
-            item_one.append(image_one);
-            document.querySelector(".bonus__prize_one").append(item_one);
-            if (sessionStorage.getItem("rocket")) {
-                let rocket = +sessionStorage.getItem("rocket");
-                sessionStorage.setItem("rocket", rocket + 1);
-            } else sessionStorage.setItem("rocket", 1);
+            create_item(image_one, "rocket", item_one, "one");
+            add_rocket();
         } else if (4 == arrBonuses[0]) {
             text_one.classList.add("bonus__text");
             let num = get_random_coins();
             text_one.textContent = `+${num}`;
-            setTimeout((() => {
-                diamonds.textContent = +diamonds.innerHTML + num;
-                sessionStorage.setItem("coins", diamonds.innerHTML);
-                diamonds.classList.add("_anim");
-                setTimeout((() => {
-                    diamonds.classList.remove("_anim");
-                }), 1e3);
-            }), 500);
-            image_one.setAttribute("src", "img/icons/romb.svg");
-            image_one.setAttribute("alt", "Image");
-            item_one.append(image_one, text_one);
-            document.querySelector(".bonus__prize_one").append(item_one);
+            add_coins(num);
+            create_item(image_one, "romb", item_one, "one", text_one);
         }
         if (0 == arrBonuses[1]) {
-            image_two.setAttribute("src", "img/icons/ball-2.svg");
-            image_two.setAttribute("alt", "Image");
-            item_two.append(image_two);
-            document.querySelector(".bonus__prize_two").append(item_two);
-            if (sessionStorage.getItem("ball")) {
-                let ball = +sessionStorage.getItem("ball");
-                sessionStorage.setItem("ball", ball + 1);
-            } else sessionStorage.setItem("ball", 1);
+            create_item(image_two, "ball-2", item_two, "two");
+            add_ball();
         } else if (1 == arrBonuses[1]) {
-            image_two.setAttribute("src", "img/icons/bomb.svg");
-            image_two.setAttribute("alt", "Image");
-            item_two.append(image_two);
-            document.querySelector(".bonus__prize_two").append(item_two);
-            if (sessionStorage.getItem("bomb")) {
-                let bomb = +sessionStorage.getItem("bomb");
-                sessionStorage.setItem("bomb", bomb + 1);
-            } else sessionStorage.setItem("bomb", 1);
+            create_item(image_two, "bomb", item_two, "two");
+            add_bomb();
         } else if (2 == arrBonuses[1]) {
             text_two.classList.add("bonus__text");
             text_two.classList.add("bonus__text_small");
             let num = get_random_monet();
             text_two.textContent = `+${num}`;
-            setTimeout((() => {
-                monets.textContent = +monets.innerHTML + num;
-                sessionStorage.setItem("monets", monets.innerHTML);
-                monets.classList.add("_anim");
-                setTimeout((() => {
-                    monets.classList.remove("_anim");
-                }), 1e3);
-            }), 500);
-            image_two.setAttribute("src", "img/icons/dot.svg");
-            image_two.setAttribute("alt", "Image");
-            item_two.append(image_two, text_two);
-            document.querySelector(".bonus__prize_two").append(item_two);
+            add_money(num);
+            create_item(image_two, "dot", item_two, "two", text_two);
         } else if (3 == arrBonuses[1]) {
-            image_two.setAttribute("src", "img/icons/rocket.svg");
-            image_two.setAttribute("alt", "Image");
-            item_two.append(image_two);
-            document.querySelector(".bonus__prize_two").append(item_two);
-            if (sessionStorage.getItem("rocket")) {
-                let rocket = +sessionStorage.getItem("rocket");
-                sessionStorage.setItem("rocket", rocket + 1);
-            } else sessionStorage.setItem("rocket", 1);
+            create_item(image_two, "rocket", item_two, "two");
+            add_rocket();
         } else if (4 == arrBonuses[1]) {
             text_two.classList.add("bonus__text");
             text_two.classList.add("bonus__text_small");
             let num = get_random_coins();
             text_two.textContent = `+${num}`;
-            setTimeout((() => {
-                diamonds.textContent = +diamonds.innerHTML + num;
-                sessionStorage.setItem("coins", diamonds.innerHTML);
-                diamonds.classList.add("_anim");
-                setTimeout((() => {
-                    diamonds.classList.remove("_anim");
-                }), 1e3);
-            }), 500);
-            image_two.setAttribute("src", "img/icons/romb.svg");
-            image_two.setAttribute("alt", "Image");
-            item_two.append(image_two, text_two);
-            document.querySelector(".bonus__prize_two").append(item_two);
+            add_coins(num);
+            create_item(image_two, "romb", item_two, "two", text_two);
         }
         if (0 == arrBonuses[2]) {
-            image_three.setAttribute("src", "img/icons/ball-2.svg");
-            image_three.setAttribute("alt", "Image");
-            item_three.append(image_three);
-            document.querySelector(".bonus__prize_three").append(item_three);
-            if (sessionStorage.getItem("ball")) {
-                let ball = +sessionStorage.getItem("ball");
-                sessionStorage.setItem("ball", ball + 1);
-            } else sessionStorage.setItem("ball", 1);
+            create_item(image_three, "ball-2", item_three, "three");
+            add_ball();
         } else if (1 == arrBonuses[2]) {
-            image_three.setAttribute("src", "img/icons/bomb.svg");
-            image_three.setAttribute("alt", "Image");
-            item_three.append(image_three);
-            document.querySelector(".bonus__prize_three").append(item_three);
-            if (sessionStorage.getItem("bomb")) {
-                let bomb = +sessionStorage.getItem("bomb");
-                sessionStorage.setItem("bomb", bomb + 1);
-            } else sessionStorage.setItem("bomb", 1);
+            create_item(image_three, "bomb", item_three, "three");
+            add_bomb();
         } else if (2 == arrBonuses[2]) {
             text_three.classList.add("bonus__text");
             text_three.classList.add("bonus__text_small");
             let num = get_random_monet();
             text_three.textContent = `+${num}`;
-            setTimeout((() => {
-                monets.textContent = +monets.innerHTML + num;
-                sessionStorage.setItem("monets", monets.innerHTML);
-                monets.classList.add("_anim");
-                setTimeout((() => {
-                    monets.classList.remove("_anim");
-                }), 1e3);
-            }), 500);
-            image_three.setAttribute("src", "img/icons/dot.svg");
-            image_three.setAttribute("alt", "Image");
-            item_three.append(image_three, text_three);
-            document.querySelector(".bonus__prize_three").append(item_three);
+            add_money(num);
+            create_item(image_three, "dot", item_three, "three", text_three);
         } else if (3 == arrBonuses[2]) {
-            image_three.setAttribute("src", "img/icons/rocket.svg");
-            image_three.setAttribute("alt", "Image");
-            item_three.append(image_three);
-            document.querySelector(".bonus__prize_three").append(item_three);
-            if (sessionStorage.getItem("rocket")) {
-                let rocket = +sessionStorage.getItem("rocket");
-                sessionStorage.setItem("rocket", rocket + 1);
-            } else sessionStorage.setItem("rocket", 1);
+            create_item(image_three, "rocket", item_three, "three");
+            add_rocket();
         } else if (4 == arrBonuses[2]) {
             text_three.classList.add("bonus__text");
             text_three.classList.add("bonus__text_small");
             let num = get_random_coins();
             text_three.textContent = `+${num}`;
-            setTimeout((() => {
-                diamonds.textContent = +diamonds.innerHTML + num;
-                sessionStorage.setItem("coins", diamonds.innerHTML);
-                diamonds.classList.add("_anim");
-                setTimeout((() => {
-                    diamonds.classList.remove("_anim");
-                }), 1e3);
-            }), 500);
-            image_three.setAttribute("src", "img/icons/romb.svg");
-            image_three.setAttribute("alt", "Image");
-            item_three.append(image_three, text_three);
-            document.querySelector(".bonus__prize_three").append(item_three);
+            add_coins(num);
+            create_item(image_two, "romb", item_two, "two", text_two);
         }
+    }
+    function create_item(image, path, item, block, text = "") {
+        image.setAttribute("src", `img/icons/${path}.svg`);
+        image.setAttribute("alt", "Image");
+        item.append(image, text);
+        document.querySelector(`.bonus__prize_${block}`).append(item);
+    }
+    function add_money(num) {
+        setTimeout((() => {
+            monets.textContent = +monets.innerHTML + num;
+            sessionStorage.setItem("monets", monets.innerHTML);
+            monets.classList.add("_anim");
+            setTimeout((() => {
+                monets.classList.remove("_anim");
+            }), 1e3);
+        }), 500);
+    }
+    function add_coins(num) {
+        setTimeout((() => {
+            diamonds.textContent = +diamonds.innerHTML + num;
+            sessionStorage.setItem("coins", diamonds.innerHTML);
+            diamonds.classList.add("_anim");
+            setTimeout((() => {
+                diamonds.classList.remove("_anim");
+            }), 1e3);
+        }), 500);
+    }
+    function add_ball() {
+        if (sessionStorage.getItem("ball")) {
+            let ball = +sessionStorage.getItem("ball");
+            sessionStorage.setItem("ball", ball + 1);
+        } else sessionStorage.setItem("ball", 1);
+    }
+    function add_bomb() {
+        if (sessionStorage.getItem("bomb")) {
+            let bomb = +sessionStorage.getItem("bomb");
+            sessionStorage.setItem("bomb", bomb + 1);
+        } else sessionStorage.setItem("bomb", 1);
+    }
+    function add_rocket() {
+        if (sessionStorage.getItem("rocket")) {
+            let rocket = +sessionStorage.getItem("rocket");
+            sessionStorage.setItem("rocket", rocket + 1);
+        } else sessionStorage.setItem("rocket", 1);
     }
     let arrRandomNumbers = [];
     function get_random_bonus() {
@@ -794,6 +1104,72 @@
         let arr = [ 1, 1, 2, 6, 5, 3 ];
         let random = Math.floor(Math.random() * (6 - 0) + 0);
         return arr[random];
+    }
+    var minTime = 500;
+    var maxTime = 2e3;
+    function getRandomArbitrary(min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
+    }
+    var casino1 = document.querySelector("#slot1");
+    var casino2 = document.querySelector("#slot2");
+    var casino3 = document.querySelector("#slot3");
+    if (casino1 && casino2 && casino3) {
+        let a, b, c;
+        var mcasino1 = new SlotMachine(casino1, {
+            active: 0,
+            delay: 100,
+            onComplete: function(active) {
+                a = this.active;
+                if (666 != a && 666 != b && 666 != c) if (a == b && b == c) {
+                    add_money(500);
+                    add_coins(50);
+                }
+            }
+        });
+        var mcasino2 = new SlotMachine(casino2, {
+            active: 2,
+            delay: 100,
+            onComplete: function(active) {
+                b = this.active;
+                if (666 != a && 666 != b && 666 != c) if (a == b && b == c) {
+                    add_money(500);
+                    add_coins(50);
+                }
+            }
+        });
+        var mcasino3 = new SlotMachine(casino3, {
+            active: 1,
+            delay: 100,
+            onComplete: function(active) {
+                c = this.active;
+                if (666 != a && 666 != b && 666 != c) if (a == b && b == c) {
+                    add_money(500);
+                    add_coins(50);
+                }
+            }
+        });
+        function gameSlotTwo() {
+            mcasino1.shuffle(9999);
+            mcasino2.shuffle(9999);
+            mcasino3.shuffle(9999);
+            setTimeout((() => mcasino1.stop()), getRandomArbitrary(minTime, maxTime));
+            setTimeout((() => mcasino2.stop()), getRandomArbitrary(minTime, maxTime));
+            setTimeout((() => mcasino3.stop()), getRandomArbitrary(minTime, maxTime));
+        }
+        var casinoAutoSpin;
+        if (document.querySelector(".casino__button-play")) document.querySelector(".casino__button-play").addEventListener("click", (() => {
+            a = 666;
+            b = 666;
+            c = 666;
+            if (casino1 && casino2 && casino3) {
+                clearInterval(casinoAutoSpin);
+                gameSlotTwo();
+            }
+            document.querySelector(".casino__button-play").classList.add("_hold");
+            setTimeout((() => {
+                document.querySelector(".casino__button-play").classList.remove("_hold");
+            }), 2e3);
+        }));
     }
     window["FLS"] = true;
     isWebp();

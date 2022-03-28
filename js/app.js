@@ -1020,15 +1020,12 @@
             create_item(image_two, "romb", item_two, "two", text_two);
         }
         if (0 == arrBonuses[2]) {
-            console.log("0");
             add_ball();
             create_item(image_three, "ball-2", item_three, "three");
         } else if (1 == arrBonuses[2]) {
-            console.log("1");
             add_bomb();
             create_item(image_three, "bomb", item_three, "three");
         } else if (2 == arrBonuses[2]) {
-            console.log("2");
             text_three.classList.add("bonus__text");
             text_three.classList.add("bonus__text_small");
             let num = get_random_monet();
@@ -1036,11 +1033,9 @@
             add_money(num);
             create_item(image_three, "dot", item_three, "three", text_three);
         } else if (3 == arrBonuses[2]) {
-            console.log("3");
             add_rocket();
             create_item(image_three, "rocket", item_three, "three");
         } else if (4 == arrBonuses[2]) {
-            console.log("4");
             text_three.classList.add("bonus__text");
             text_three.classList.add("bonus__text_small");
             let num = get_random_coins();

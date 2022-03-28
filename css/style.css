@@ -1422,6 +1422,10 @@ body._game {
   position: relative;
   top: 0.625rem;
 }
+.casino__item_3 {
+  position: relative;
+  left: 0.3125rem;
+}
 .casino__item_5 {
   position: relative;
   top: 0.625rem;

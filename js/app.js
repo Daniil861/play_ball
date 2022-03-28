@@ -974,11 +974,11 @@
         let text_two = document.createElement("div");
         let text_three = document.createElement("div");
         if (0 == arrBonuses[0]) {
-            create_item(image_one, "ball-2", item_one, "one");
             add_ball();
+            create_item(image_one, "ball-2", item_one, "one");
         } else if (1 == arrBonuses[0]) {
-            create_item(image_one, "bomb", item_one, "one");
             add_bomb();
+            create_item(image_one, "bomb", item_one, "one");
         } else if (2 == arrBonuses[0]) {
             text_one.classList.add("bonus__text");
             let num = get_random_monet();
@@ -986,8 +986,8 @@
             add_money(num);
             create_item(image_one, "dot", item_one, "one", text_one);
         } else if (3 == arrBonuses[0]) {
-            create_item(image_one, "rocket", item_one, "one");
             add_rocket();
+            create_item(image_one, "rocket", item_one, "one");
         } else if (4 == arrBonuses[0]) {
             text_one.classList.add("bonus__text");
             let num = get_random_coins();
@@ -996,11 +996,11 @@
             create_item(image_one, "romb", item_one, "one", text_one);
         }
         if (0 == arrBonuses[1]) {
-            create_item(image_two, "ball-2", item_two, "two");
             add_ball();
+            create_item(image_two, "ball-2", item_two, "two");
         } else if (1 == arrBonuses[1]) {
-            create_item(image_two, "bomb", item_two, "two");
             add_bomb();
+            create_item(image_two, "bomb", item_two, "two");
         } else if (2 == arrBonuses[1]) {
             text_two.classList.add("bonus__text");
             text_two.classList.add("bonus__text_small");
@@ -1009,8 +1009,8 @@
             add_money(num);
             create_item(image_two, "dot", item_two, "two", text_two);
         } else if (3 == arrBonuses[1]) {
-            create_item(image_two, "rocket", item_two, "two");
             add_rocket();
+            create_item(image_two, "rocket", item_two, "two");
         } else if (4 == arrBonuses[1]) {
             text_two.classList.add("bonus__text");
             text_two.classList.add("bonus__text_small");
@@ -1020,12 +1020,15 @@
             create_item(image_two, "romb", item_two, "two", text_two);
         }
         if (0 == arrBonuses[2]) {
-            create_item(image_three, "ball-2", item_three, "three");
+            console.log("0");
             add_ball();
+            create_item(image_three, "ball-2", item_three, "three");
         } else if (1 == arrBonuses[2]) {
-            create_item(image_three, "bomb", item_three, "three");
+            console.log("1");
             add_bomb();
+            create_item(image_three, "bomb", item_three, "three");
         } else if (2 == arrBonuses[2]) {
+            console.log("2");
             text_three.classList.add("bonus__text");
             text_three.classList.add("bonus__text_small");
             let num = get_random_monet();
@@ -1033,15 +1036,17 @@
             add_money(num);
             create_item(image_three, "dot", item_three, "three", text_three);
         } else if (3 == arrBonuses[2]) {
-            create_item(image_three, "rocket", item_three, "three");
+            console.log("3");
             add_rocket();
+            create_item(image_three, "rocket", item_three, "three");
         } else if (4 == arrBonuses[2]) {
+            console.log("4");
             text_three.classList.add("bonus__text");
             text_three.classList.add("bonus__text_small");
             let num = get_random_coins();
             text_three.textContent = `+${num}`;
             add_coins(num);
-            create_item(image_two, "romb", item_two, "two", text_two);
+            create_item(image_three, "romb", item_three, "three", text_three);
         }
     }
     function create_item(image, path, item, block, text = "") {

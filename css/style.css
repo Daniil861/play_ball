@@ -1386,7 +1386,7 @@ body._game {
   left: 31.5%;
   width: 1.5625rem;
   height: 92%;
-  background: url("../img/casino/line.svg") center/cover no-repeat;
+  background: url("../img/casino/line.svg") center/contain no-repeat;
   z-index: 2;
 }
 .casino__cont_line-2 {
@@ -1396,7 +1396,7 @@ body._game {
   left: 62%;
   width: 1.5625rem;
   height: 92%;
-  background: url("../img/casino/line.svg") center/cover no-repeat;
+  background: url("../img/casino/line.svg") center/contain no-repeat;
   z-index: 2;
 }
 .casino__column {
